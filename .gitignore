@@ -1,2 +1,4 @@
 apiKey_ham.txt
-.ipynb_checkpoints/*
+.ipynb_checkpoints
+.idea
+venv
