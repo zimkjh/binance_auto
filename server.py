@@ -8,9 +8,16 @@ app = Flask(__name__)
 def check5Min():
     global positionExist
     if positionExist and not utils.checkPositionExist():
+        print("포지션 종료")
         positionExist = False
         utils.slackPositionClosed()
-    return 5
+    elif positionExist and utils.checkPositionExist():
+        print("기존에 사둔게 있음  ")
+        utils.checkAndBuy(15)
+    elif not positionExist:
+        print("새로살게 있나??? ")
+        utils.checkAndBuy(5)
+    print("")
 
 
 @app.route("/")
@@ -21,6 +28,6 @@ def hello_world():
 utils.init()
 utils.slackPositionClosed()
 positionExist = utils.checkPositionExist()
-sched = BackgroundScheduler(daemon=True)
-sched.add_job(check5Min, 'cron', minute="*/5", second="5")
-sched.start()
+scheduler = BackgroundScheduler(daemon=True)
+scheduler.add_job(check5Min, 'cron', minute="*/5", second="5")
+scheduler.start()
