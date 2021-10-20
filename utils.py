@@ -35,7 +35,7 @@ def slackPositionClosed():
 
 
 def slackBuy(price, message):
-    slack.chat.post_message("#autostock", "buy, " + price + " (" + message + ")")
+    slack.chat.post_message("#autostock", "buy, " + str(price) + " (" + message + ")")
 
 
 def getBalance():
@@ -128,7 +128,7 @@ def writeRecord(updateTime, avgPrice):
         f = open(fileName, "w")
         f.close()
         lines = []
-    lines.append(updateTime + " " + avgPrice + "\n")
+    lines.append(str(updateTime) + " " + str(avgPrice) + "\n")
     with open(fileName, "w") as f:
         for line in lines:
             f.write(line)
@@ -149,7 +149,7 @@ def buy():
     )
     price = order["price"]
     print("구매시 가격 : ", price)
-    updateTime = order["updateTime"]
+    updateTime = order["info"]["updateTime"]
     slackBuy(price, "")
     writeRecord(updateTime, price)
     targetPrice = round(float(price) * 1.0033, 2)
@@ -163,7 +163,7 @@ def water():
     )
     price = order["price"]
     print("물 탔을때 가격 : ", price)
-    updateTime = order["updateTime"]
+    updateTime = order["info"]["updateTime"]
     slackBuy(price, "water")
     writeRecord(updateTime, price)
     binance.cancel_all_orders(symbol="ETH/USDT")

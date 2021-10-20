@@ -2,3 +2,4 @@ apiKey_ham.txt
 .ipynb_checkpoints
 .idea
 venv
+__pycache__
