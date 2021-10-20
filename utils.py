@@ -89,7 +89,7 @@ def checkIfGoodToBuy():
         since=None,
         limit=10)
     candleL = []
-    for e in eth5m:
+    for e in eth5m[:-1]:
         candle = e[4] - e[1]
         if candle > 3:
             candleL.append("white")
@@ -169,7 +169,7 @@ def water():
     binance.cancel_all_orders(symbol="ETH/USDT")
     targetPrice = round(getEntryPrice() * 1.0022, 2)
     createLimitSell(targetPrice, getPositionAmt())
-    print(getPositionAmt(), " 만큼... 파는거 예dirrr")
+    print(getPositionAmt(), " 만큼... 파는거 예정  ")
 
 
 def checkAndBuy(term):
