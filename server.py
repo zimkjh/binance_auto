@@ -26,7 +26,6 @@ def hello_world():
 
 
 utils.init()
-utils.slackPositionClosed()
 positionExist = utils.checkPositionExist()
 scheduler = BackgroundScheduler(daemon=True)
 scheduler.add_job(check5Min, 'cron', minute="*/5", second="5")

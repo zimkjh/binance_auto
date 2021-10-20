@@ -93,24 +93,22 @@ def checkIfGoodToBuy():
         candle = e[4] - e[1]
         if candle > 3:
             candleL.append("white")
-        elif candle < - 10:
-            candleL.append("big black")
         elif candle < -3:
             candleL.append("black")
+        else:
+            candleL.append("")
     print(candleL)
     if len(candleL) < 3:
         return False
     goodStack = 0
-    bigStack = 0
     for i in range(len(candleL) - 1, -1, -1):
         if candleL[i] == "white":
             return False
-        elif candleL[i] == "big black":
-            goodStack += 1
-            bigStack = 1
         elif candleL[i] == "black":
             goodStack += 1
-        if (goodStack + bigStack) >= 4:
+        elif candleL[i] == "" and goodStack >= 3:
+            return True
+        if goodStack >= 4:
             return True
     return False
 
@@ -154,7 +152,7 @@ def buy():
     updateTime = order["updateTime"]
     slackBuy(price, "")
     writeRecord(updateTime, price)
-    targetPrice = round(float(price) * 1.0022, 2)
+    targetPrice = round(float(price) * 1.0033, 2)
     createLimitSell(targetPrice, 0.002)
 
 
