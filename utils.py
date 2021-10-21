@@ -63,7 +63,7 @@ def checkIfGoodToWater():
         timeframe='15m',
         since=None,
         limit=2)
-    fileName = getTodayDate() + ".txt"
+    fileName = "record/" + getTodayDate() + ".txt"
     with open(fileName) as f:
         lines = f.readlines()
     candle = eth15m[0]
@@ -97,7 +97,6 @@ def checkIfGoodToBuy():
             candleL.append("black")
         else:
             candleL.append("")
-    print(candleL)
     if len(candleL) < 3:
         return False
     goodStack = 0
@@ -120,7 +119,7 @@ def getTodayDate():
 
 
 def writeRecord(updateTime, avgPrice):
-    fileName = getTodayDate() + ".txt"
+    fileName = "record/" + getTodayDate() + ".txt"
     try:
         with open(fileName) as f:
             lines = f.readlines()
