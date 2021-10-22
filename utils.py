@@ -2,6 +2,8 @@ import ccxt
 from datetime import datetime
 from slacker import Slacker
 
+minAmt = 0.004
+
 
 def init():
     global slack, binance
@@ -66,15 +68,17 @@ def checkIfGoodToWater():
     fileName = "record/" + getTodayDate() + ".txt"
     with open(fileName) as f:
         lines = f.readlines()
-    candle = eth15m[0]
-    if int(lines[-1].split()[0]) > candle[0]:
-        print("이전 봉에 구매 이력 있어서 물타기 스킵")
+    prevCandle = eth15m[0]
+    nowCandle = eth15m[1]
+    print(lines[-1].split()[0], nowCandle[0], int(lines[-1].split()[0]) > nowCandle[0])
+    if int(lines[-1].split()[0]) > nowCandle[0]:
+        print("현재 봉에 구매 이력 있어서 물타기 스킵")
         return False
-    elif candle[4] > getEntryPrice():
-        print("이전 봉 종가가 평균 가격보다 비싸서 물타기 스킵  ")
+    elif nowCandle[4] > getEntryPrice():
+        print("현재 가격이 평균 가격보다 비싸서 물타기 스킵  ")
         return False
     else:
-        if candle[4] - candle[1] < -3:
+        if prevCandle[4] - prevCandle[1] < -3:
             print("물타기 하기~")
             return True
         else:
@@ -97,6 +101,7 @@ def checkIfGoodToBuy():
             candleL.append("black")
         else:
             candleL.append("")
+    print(candleL)
     if len(candleL) < 3:
         return False
     goodStack = 0
@@ -144,7 +149,7 @@ def createLimitSell(price, amount):
 def buy():
     order = binance.create_market_buy_order(
         symbol="ETH/USDT",
-        amount=0.002,
+        amount=minAmt,
     )
     price = order["price"]
     print("구매시 가격 : ", price)
@@ -152,13 +157,13 @@ def buy():
     slackBuy(price, "")
     writeRecord(updateTime, price)
     targetPrice = round(float(price) * 1.0033, 2)
-    createLimitSell(targetPrice, 0.002)
+    createLimitSell(targetPrice, minAmt)
 
 
 def water():
     order = binance.create_market_buy_order(
         symbol="ETH/USDT",
-        amount=0.002,
+        amount=minAmt,
     )
     price = order["price"]
     print("물 탔을때 가격 : ", price)
@@ -174,10 +179,10 @@ def water():
 def checkAndBuy(term):
     if term == 5:
         if checkIfGoodToBuy():
-            print("사기 좋군  ")
+            print("사기 좋군  ", datetime.now())
             buy()
-        else:
-            print('사기에 별로균')
+        # else:
+        #     print('사기에 별로균')
     elif term == 15:
         if checkIfGoodToWater():
             print("물타기 좋군  ")
