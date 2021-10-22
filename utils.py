@@ -171,7 +171,8 @@ def water():
     writeRecord(updateTime, price)
     binance.cancel_all_orders(symbol="ETH/USDT")
     nowPositionAmt = getPositionAmt()
-    createLimitSell(round(getEntryPrice() * 1.0011, 2), nowPositionAmt - minAmt * 2)
+    if nowPositionAmt > minAmt * 2:
+        createLimitSell(round(getEntryPrice() * 1.0011, 2), nowPositionAmt - minAmt * 2)
     createLimitSell(round(getEntryPrice() * 1.0022, 2), minAmt * 2)
     print(round(getEntryPrice() * 1.0011, 2), "가격으로 ", nowPositionAmt - minAmt * 2, "만큼 팔기")
     print(round(getEntryPrice() * 1.0022, 2), "가격으로 ", minAmt * 2, "만큼 팔기")
@@ -182,11 +183,6 @@ def checkAndBuy(term):
         if checkIfGoodToBuy():
             print("사기 좋군  ", datetime.now())
             buy()
-        # else:
-        #     print('사기에 별로균')
     elif term == 15:
         if checkIfGoodToWater():
-            print("물타기 좋군  ")
             water()
-        else:
-            print("물타기에 별로군  ")
