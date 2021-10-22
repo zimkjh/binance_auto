@@ -2,7 +2,7 @@ import ccxt
 from datetime import datetime
 from slacker import Slacker
 
-minAmt = 0.004
+minAmt = 0.008
 
 
 def init():
@@ -70,7 +70,6 @@ def checkIfGoodToWater():
         lines = f.readlines()
     prevCandle = eth15m[0]
     nowCandle = eth15m[1]
-    print(lines[-1].split()[0], nowCandle[0], int(lines[-1].split()[0]) > nowCandle[0])
     if int(lines[-1].split()[0]) > nowCandle[0]:
         print("현재 봉에 구매 이력 있어서 물타기 스킵")
         return False
@@ -171,9 +170,11 @@ def water():
     slackBuy(price, "water")
     writeRecord(updateTime, price)
     binance.cancel_all_orders(symbol="ETH/USDT")
-    targetPrice = round(getEntryPrice() * 1.0022, 2)
-    createLimitSell(targetPrice, getPositionAmt())
-    print(getPositionAmt(), " 만큼... 파는거 예정  ")
+    nowPositionAmt = getPositionAmt()
+    createLimitSell(round(getEntryPrice() * 1.0011, 2), nowPositionAmt - minAmt * 2)
+    createLimitSell(round(getEntryPrice() * 1.0022, 2), minAmt * 2)
+    print(round(getEntryPrice() * 1.0011, 2), "가격으로 ", nowPositionAmt - minAmt * 2, "만큼 팔기")
+    print(round(getEntryPrice() * 1.0022, 2), "가격으로 ", minAmt * 2, "만큼 팔기")
 
 
 def checkAndBuy(term):
