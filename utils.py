@@ -70,7 +70,7 @@ def checkIfGoodToWater():
         lines = f.readlines()
     prevCandle = eth15m[0]
     nowCandle = eth15m[1]
-    if int(lines[-1].split()[0]) > nowCandle[0]:
+    if int(lines[-1]) > nowCandle[0]:
         print("[물타기 스킵] 현재 봉에 구매 이력 있어서")
         return False
     elif nowCandle[4] > getEntryPrice():
@@ -122,18 +122,9 @@ def getTodayDate():
     return nowDate
 
 
-def writeRecord(updateTime, avgPrice):
-    try:
-        with open(recordFilePath) as f:
-            lines = f.readlines()
-    except:
-        f = open(recordFilePath, "w")
-        f.close()
-        lines = []
-    lines.append(str(updateTime) + " " + str(avgPrice) + "\n")
+def writeRecord(updateTime):
     with open(recordFilePath, "w") as f:
-        for line in lines:
-            f.write(line)
+        f.write(updateTime)
 
 
 def createLimitSell(price, amount):
