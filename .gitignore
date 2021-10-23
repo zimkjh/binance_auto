@@ -5,3 +5,4 @@ venv
 __pycache__
 record.txt
 binance_venv
+.DS_Store
