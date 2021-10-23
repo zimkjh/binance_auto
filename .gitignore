@@ -3,5 +3,5 @@ apiKey_ham.txt
 .idea
 venv
 __pycache__
-record
 record.txt
+binance_venv
