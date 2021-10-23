@@ -3,6 +3,7 @@ from datetime import datetime
 from slacker import Slacker
 
 minAmt = 0.008
+recordFilePath = "record.txt"
 
 
 def init():
@@ -65,23 +66,22 @@ def checkIfGoodToWater():
         timeframe='15m',
         since=None,
         limit=2)
-    fileName = "record/" + getTodayDate() + ".txt"
-    with open(fileName) as f:
+    with open(recordFilePath) as f:
         lines = f.readlines()
     prevCandle = eth15m[0]
     nowCandle = eth15m[1]
     if int(lines[-1].split()[0]) > nowCandle[0]:
-        print("현재 봉에 구매 이력 있어서 물타기 스킵")
+        print("[물타기 스킵] 현재 봉에 구매 이력 있어서")
         return False
     elif nowCandle[4] > getEntryPrice():
-        print("현재 가격이 평균 가격보다 비싸서 물타기 스킵  ")
+        print("[물타기 스킵] 현재 가격이 평균 가격보다 비싸서")
         return False
     else:
         if prevCandle[4] - prevCandle[1] < -3:
-            print("물타기 하기~")
+            print("WATER")
             return True
         else:
-            print("이번 봉은 음봉이 아니라 물타기 스킵")
+            print("[물타기 스킵] 이번 봉은 음봉이 아니어서")
             return False
 
 
@@ -90,7 +90,7 @@ def checkIfGoodToBuy():
         symbol="ETH/USDT",
         timeframe='5m',
         since=None,
-        limit=10)
+        limit=12)
     candleL = []
     for e in eth5m[:-1]:
         candle = e[4] - e[1]
@@ -123,16 +123,15 @@ def getTodayDate():
 
 
 def writeRecord(updateTime, avgPrice):
-    fileName = "record/" + getTodayDate() + ".txt"
     try:
-        with open(fileName) as f:
+        with open(recordFilePath) as f:
             lines = f.readlines()
     except:
-        f = open(fileName, "w")
+        f = open(recordFilePath, "w")
         f.close()
         lines = []
     lines.append(str(updateTime) + " " + str(avgPrice) + "\n")
-    with open(fileName, "w") as f:
+    with open(recordFilePath, "w") as f:
         for line in lines:
             f.write(line)
 
@@ -165,16 +164,15 @@ def water():
         amount=minAmt,
     )
     price = order["price"]
-    print("물 탔을때 가격 : ", price)
     updateTime = order["info"]["updateTime"]
-    slackBuy(price, "water")
     writeRecord(updateTime, price)
     binance.cancel_all_orders(symbol="ETH/USDT")
     nowPositionAmt = getPositionAmt()
+    slackBuy(price, "water " + str(nowPositionAmt))
     if nowPositionAmt > minAmt * 2:
         createLimitSell(round(getEntryPrice() * 1.0011, 2), nowPositionAmt - minAmt * 2)
+        print(round(getEntryPrice() * 1.0011, 2), "가격으로 ", nowPositionAmt - minAmt * 2, "만큼 팔기")
     createLimitSell(round(getEntryPrice() * 1.0022, 2), minAmt * 2)
-    print(round(getEntryPrice() * 1.0011, 2), "가격으로 ", nowPositionAmt - minAmt * 2, "만큼 팔기")
     print(round(getEntryPrice() * 1.0022, 2), "가격으로 ", minAmt * 2, "만큼 팔기")
 
 

@@ -13,9 +13,7 @@ def check5Min():
         utils.slackPositionClosed()
         print("")
     elif positionExist and utils.checkPositionExist():
-        print("기존에 사둔게 있음  ")
         utils.checkAndBuy(15)
-        print("")
     elif not positionExist:
         print("새로살게 있나??? ")
         utils.checkAndBuy(5)
