@@ -144,7 +144,7 @@ def buy():
     print("구매시 가격 : ", price)
     updateTime = order["info"]["updateTime"]
     slackBuy(price, "")
-    writeRecord(updateTime, price)
+    writeRecord(updateTime)
     targetPrice = round(float(price) * 1.0033, 2)
     createLimitSell(targetPrice, minAmt)
 
@@ -156,7 +156,7 @@ def water():
     )
     price = order["price"]
     updateTime = order["info"]["updateTime"]
-    writeRecord(updateTime, price)
+    writeRecord(updateTime)
     binance.cancel_all_orders(symbol="ETH/USDT")
     nowPositionAmt = getPositionAmt()
     slackBuy(price, "water " + str(nowPositionAmt))
