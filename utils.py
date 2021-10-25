@@ -2,7 +2,7 @@ import ccxt
 from datetime import datetime
 from slacker import Slacker
 
-minAmt = 0.01
+minAmt = 0.008
 recordFilePath = "record.txt"
 
 
@@ -165,7 +165,6 @@ def water():
         print(round(getEntryPrice() * 1.0011, 2), "가격으로 ", nowPositionAmt - minAmt * 2, "만큼 팔기")
     createLimitSell(round(getEntryPrice() * 1.0022, 2), minAmt * 2)
     print(round(getEntryPrice() * 1.0022, 2), "가격으로 ", minAmt * 2, "만큼 팔기")
-
 
 def checkAndBuy(term):
     if term == 5:
