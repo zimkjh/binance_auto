@@ -2,7 +2,7 @@ import ccxt
 from datetime import datetime
 from slacker import Slacker
 
-minAmt = 0.008
+minAmt = 0.01
 recordFilePath = "record.txt"
 
 
