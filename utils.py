@@ -2,7 +2,7 @@ import ccxt
 from datetime import datetime
 from slacker import Slacker
 
-minAmt = 0.008
+minAmt = 0.09
 recordFilePath = "record.txt"
 
 
@@ -100,7 +100,6 @@ def checkIfGoodToBuy():
             candleL.append("black")
         else:
             candleL.append("")
-    print(candleL)
     if len(candleL) < 3:
         return False
     goodStack = 0
@@ -128,11 +127,12 @@ def writeRecord(updateTime):
 
 
 def createLimitSell(price, amount):
-    binance.create_limit_sell_order(
+    order = binance.create_limit_sell_order(
         symbol='ETH/USDT',
         amount=amount,
         price=price
     )
+    return order["amount"]
 
 
 def buy():
@@ -141,12 +141,13 @@ def buy():
         amount=minAmt,
     )
     price = order["price"]
-    print("구매시 가격 : ", price)
+    nowPositionAmt = getPositionAmt()
+    print("구매시 가격 : ", price, ", nowPositionAmt : ", nowPositionAmt)
     updateTime = order["info"]["updateTime"]
     slackBuy(price, "")
     writeRecord(updateTime)
     targetPrice = round(float(price) * 1.0033, 2)
-    createLimitSell(targetPrice, minAmt)
+    createLimitSell(targetPrice, nowPositionAmt)
 
 
 def water():
@@ -160,11 +161,14 @@ def water():
     binance.cancel_all_orders(symbol="ETH/USDT")
     nowPositionAmt = getPositionAmt()
     slackBuy(price, "water " + str(nowPositionAmt))
+    sellAmount = 0
     if nowPositionAmt > minAmt * 2:
-        createLimitSell(round(getEntryPrice() * 1.0011, 2), nowPositionAmt - minAmt * 2)
-        print(round(getEntryPrice() * 1.0011, 2), "가격으로 ", nowPositionAmt - minAmt * 2, "만큼 팔기")
-    createLimitSell(round(getEntryPrice() * 1.0022, 2), minAmt * 2)
-    print(round(getEntryPrice() * 1.0022, 2), "가격으로 ", minAmt * 2, "만큼 팔기")
+        print("처음 의도된 파는 양 : ", round(nowPositionAmt - minAmt * 2, 2))
+        sellAmount = createLimitSell(round(getEntryPrice() * 1.0011, 2), round(nowPositionAmt - minAmt * 2, 2))
+        print(round(getEntryPrice() * 1.0011, 2), "가격으로 ", sellAmount, "만큼 팔기")
+    createLimitSell(round(getEntryPrice() * 1.0022, 2), round(nowPositionAmt - sellAmount, 3))
+    print(round(getEntryPrice() * 1.0022, 2), "가격으로 ", round(nowPositionAmt - sellAmount, 3), "만큼 팔기")
+
 
 def checkAndBuy(term):
     if term == 5:

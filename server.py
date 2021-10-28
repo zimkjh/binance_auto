@@ -15,7 +15,6 @@ def check5Min():
     elif positionExist and utils.checkPositionExist():
         utils.checkAndBuy(15)
     elif not positionExist:
-        print("새로살게 있나??? ")
         utils.checkAndBuy(5)
         positionExist = utils.checkPositionExist()
 
