@@ -1,6 +1,7 @@
 import ccxt
 from datetime import datetime
 from slacker import Slacker
+import time
 
 minAmt = 0.09
 recordFilePath = "record.txt"
@@ -159,6 +160,7 @@ def water():
     updateTime = order["info"]["updateTime"]
     writeRecord(updateTime)
     binance.cancel_all_orders(symbol="ETH/USDT")
+    time.sleep(3)
     nowPositionAmt = getPositionAmt()
     slackBuy(price, "water " + str(nowPositionAmt))
     sellAmount = 0
