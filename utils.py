@@ -147,7 +147,7 @@ def buy():
     updateTime = order["info"]["updateTime"]
     slackBuy(price, "")
     writeRecord(updateTime)
-    targetPrice = round(float(price) * 1.0033, 2)
+    targetPrice = round(float(price) * 1.0055, 2)
     createLimitSell(targetPrice, nowPositionAmt)
 
 
