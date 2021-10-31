@@ -139,7 +139,7 @@ def createLimitSell(price, amount):
 def buy():
     order = binance.create_market_buy_order(
         symbol="ETH/USDT",
-        amount=minAmt,
+        amount=round(minAmt * 2, 2),
     )
     price = order["price"]
     nowPositionAmt = getPositionAmt()
@@ -147,7 +147,7 @@ def buy():
     updateTime = order["info"]["updateTime"]
     slackBuy(price, "")
     writeRecord(updateTime)
-    targetPrice = round(float(price) * 1.0055, 2)
+    targetPrice = round(float(price) * 1.0033, 2)
     createLimitSell(targetPrice, nowPositionAmt)
 
 
