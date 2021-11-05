@@ -3,7 +3,7 @@ from datetime import datetime
 from slacker import Slacker
 import time
 
-minAmt = 0.09
+minAmt = 0.05  # 1725 * 3 / 5000 / 20
 recordFilePath = "record.txt"
 
 
