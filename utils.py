@@ -2,8 +2,9 @@ import ccxt
 from datetime import datetime
 from slacker import Slacker
 import time
+import json
 
-minAmt = 0.05  # 1725 * 3 / 5000 / 20
+minAmt = 0.05  # 621 * 3 / 5000 / 10
 recordFilePath = "record.txt"
 
 
@@ -42,9 +43,27 @@ def slackBuy(price, message):
     slack.chat.post_message("#autostock", "buy, " + str(price) + " (" + message + ")")
 
 
+def slackNoMoney():
+    slack.chat.post_message('#autostock', 'not enough money, ' + str(getBalanceFree()))
+
+
+def slackMessage(message):
+    slack.chat.post_message('#autostock', message)
+
+
 def getBalance():
-    balance = binance.fetch_balance(params={"type": "future"})
+    balance = binance.fetch_balance()
     return str(balance['USDT'])
+
+
+def getBalanceFree():
+    balance = binance.fetch_balance()
+    return balance['USDT']["free"]
+
+
+def getNowPrice():
+    ticker = binance.fetch_ticker('ETH/USDT')
+    return ticker['close']
 
 
 def showDateTime(dateTime):
@@ -152,6 +171,15 @@ def buy():
 
 
 def water():
+    if getBalanceFree() < minAmt * getNowPrice() * 1.2:
+        order = binance.create_order(
+            symbol="ETH/USDT",
+            type='stop_loss_limit',
+            params={'stopPrice': getEntryPrice() * 0.9}
+        )
+        slackNoMoney()
+        slackMessage("stop loss price : " + str(getEntryPrice() * 0.9) + ", order result : " + json.dumps(order))
+        return
     order = binance.create_market_buy_order(
         symbol="ETH/USDT",
         amount=minAmt,
